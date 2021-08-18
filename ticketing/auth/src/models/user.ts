@@ -1,4 +1,5 @@
 import { Schema, model, Model, Document } from 'mongoose';
+
 import { Password } from '../services/password';
 
 // an interface representing a document in MongoDB.
@@ -20,10 +21,27 @@ interface UserDoc extends Document {
   password: string;
 }
 
-const userSchema = new Schema<UserDoc>({
-  email: { type: String, required: true },
-  password: { type: String, required: true }
-});
+const userSchema = new Schema<UserDoc>(
+  {
+    email: {
+      type: String,
+      required: true
+    },
+    password: {
+      type: String,
+      required: true
+    }
+  },
+  {
+    toJSON: {
+      transform(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.password;
+        delete ret.__v;
+      }
+    }
+  });
 
 // we need access to the User object so we can't
 // use arrow functions (different scope of the 
